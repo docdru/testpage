@@ -48,8 +48,8 @@ header { position: sticky; top: 0; z-index: 10; background: rgba(251, 250, 247, 
 /* Scroll-reveal: only hidden when JS is running, so content stays visible without it. */
 .js .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
 .js .reveal.visible { opacity: 1; transform: none; }
-.cards .reveal:nth-child(2), .steps .reveal:nth-child(2) { transition-delay: .12s; }
-.cards .reveal:nth-child(3), .steps .reveal:nth-child(3) { transition-delay: .24s; }
+.sec-cards li.reveal:nth-child(2), .sec-steps li.reveal:nth-child(2) { transition-delay: .12s; }
+.sec-cards li.reveal:nth-child(3), .sec-steps li.reveal:nth-child(3) { transition-delay: .24s; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

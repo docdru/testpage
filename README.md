@@ -30,9 +30,44 @@ npm run dev        # http://localhost:4321/testpage/
 
 ## Editing content (from Notion)
 
+All text is in Markdown files, so you rarely need to touch HTML.
+
+### Home page
+
+The home page is built from the files in `src/content/home/`, one file per section,
+shown in the order given by `order:`. Edit the text below the `---` header block.
+
+| File | Section |
+| --- | --- |
+| `01-hero.md` | Big intro at the top: a `#` headline and a short paragraph |
+| `02-mission.md` | Mission statement |
+| `03-focus-areas.md` | Cards: one bullet per card |
+| `04-how-it-works.md` | Steps: one numbered item per step |
+| `05-join.md` | Call to action at the bottom |
+
+In card and step lists, start each item with a **bold phrase**; it becomes the heading:
+
+```markdown
+- **Focus area 1** Short description.
+```
+
+Header fields you can set in each file:
+
+- `order`: position on the page (1 = top).
+- `type`: the look of the section: `hero`, `text`, `cards`, `steps` or `cta`.
+- `eyebrow`: the small capitalised line above the heading (optional).
+- `id`: an anchor name, so a link to `#id` scrolls there (optional).
+- `buttons`: a list of `label` and `href`. Links starting with `/` go to a page on this
+  site, e.g. `/contact/`.
+
+To add a section, copy a file, give it a new name and `order`, and change the text.
+To remove one, delete the file.
+
+### Other pages
+
 - `src/pages/*.md` are plain Markdown pages. In Notion, use **⋯ → Export → Markdown**
   and paste the text below the header block (`layout`, `title`).
 - A new file `src/pages/projects.md` becomes `/projects/`. Add it to the `nav` list
   in `src/layouts/Base.astro`.
-- The home page is `src/pages/index.astro`, HTML with a little Astro.
-- Colours and fonts are in `src/styles/global.css`.
+- Colours and fonts are in `src/styles/global.css`. The layout of the home page
+  sections is in `src/pages/index.astro`.
