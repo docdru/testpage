@@ -1,0 +1,53 @@
+---
+import '../styles/global.css';
+
+// Works for .astro pages (props) and .md pages (frontmatter).
+const { title, description } = Astro.props.frontmatter ?? Astro.props;
+
+// Build links that respect the `base` setting (needed on GitHub Pages project sites).
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const link = (path) => `${base}${path}`;
+const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (path) => (link(path).replace(/\/$/, '') || '/') === current;
+
+const nav = [
+  { href: '/', label: 'Home' },
+  { href: '/about/', label: 'About' },
+  { href: '/contact/', label: 'Contact' },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title ? `${title} · AttentionLab` : 'AttentionLab'}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" type="image/svg+xml" href={link('/favicon.svg')} />
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <a class="logo" href={link('/')}>Attention<span>Lab</span></a>
+        <nav>
+          {nav.map((item) => (
+            <a href={link(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </header>
+    <main>
+      <div class="wrap">
+        <slot />
+      </div>
+    </main>
+    <footer>
+      <div class="wrap">
+        <span>© {new Date().getFullYear()} AttentionLab · Verein</span>
+        <span><a href={link('/impressum/')}>Impressum</a> · <a href={link('/privacy/')}>Privacy</a></span>
+      </div>
+    </footer>
+  </body>
+</html>

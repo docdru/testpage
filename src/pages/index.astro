@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<Base title="Home" description="AttentionLab is a Swiss nonprofit association.">
+  <h1>Placeholder headline about what AttentionLab stands for</h1>
+  <p class="lead">
+    One or two sentences on the mission. Replace this with the intro you drafted in Notion.
+  </p>
+  <p><a class="button" href={`${base}/contact/`}>Get involved</a></p>
+
+  <h2>What we do</h2>
+  <div class="cards">
+    <div class="card"><h3>Focus area 1</h3><p>Short description.</p></div>
+    <div class="card"><h3>Focus area 2</h3><p>Short description.</p></div>
+    <div class="card"><h3>Focus area 3</h3><p>Short description.</p></div>
+  </div>
+</Base>
