@@ -40,3 +40,18 @@ a { color: var(--accent); }
 footer { border-top: 1px solid #e6e2d8; color: var(--muted); font-size: .9rem; }
 footer .wrap { padding-block: 1.5rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
 footer a { color: var(--muted); }
+
+html { scroll-behavior: smooth; }
+main.wide { padding-block: 0; }
+header { position: sticky; top: 0; z-index: 10; background: rgba(251, 250, 247, .9); backdrop-filter: blur(8px); }
+
+/* Scroll-reveal: only hidden when JS is running, so content stays visible without it. */
+.js .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+.js .reveal.visible { opacity: 1; transform: none; }
+.cards .reveal:nth-child(2), .steps .reveal:nth-child(2) { transition-delay: .12s; }
+.cards .reveal:nth-child(3), .steps .reveal:nth-child(3) { transition-delay: .24s; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+}

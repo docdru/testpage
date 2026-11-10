@@ -1,18 +1,126 @@
 ---
 import Base from '../layouts/Base.astro';
+import HeroGraphic from '../components/HeroGraphic.astro';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
-<Base title="Home" description="AttentionLab is a Swiss nonprofit association.">
-  <h1>Placeholder headline about what AttentionLab stands for</h1>
-  <p class="lead">
-    One or two sentences on the mission. Replace this with the intro you drafted in Notion.
-  </p>
-  <p><a class="button" href={`${base}/contact/`}>Get involved</a></p>
+<Base title="Home" description="AttentionLab is a Swiss nonprofit association." wide>
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div class="hero-text reveal">
+        <p class="eyebrow">Swiss nonprofit association</p>
+        <h1>Placeholder headline about what AttentionLab stands for</h1>
+        <p class="lead">One or two sentences on the mission. Replace this with the intro you drafted in Notion.</p>
+        <p class="actions">
+          <a class="button" href="#join">Get involved</a>
+          <a class="text-link" href="#mission">Learn more ↓</a>
+        </p>
+      </div>
+      <div class="hero-art" data-parallax="0.15">
+        <HeroGraphic />
+      </div>
+    </div>
+  </section>
 
-  <h2>What we do</h2>
-  <div class="cards">
-    <div class="card"><h3>Focus area 1</h3><p>Short description.</p></div>
-    <div class="card"><h3>Focus area 2</h3><p>Short description.</p></div>
-    <div class="card"><h3>Focus area 3</h3><p>Short description.</p></div>
-  </div>
+  <section id="mission" class="band">
+    <div class="wrap narrow reveal">
+      <p class="eyebrow">Our mission</p>
+      <h2>A short, memorable statement of why we exist.</h2>
+      <p>Two or three sentences expanding on the mission: the problem you see, who it affects,
+        and what AttentionLab wants to change.</p>
+    </div>
+  </section>
+
+  <section class="band alt">
+    <div class="wrap">
+      <p class="eyebrow reveal">What we do</p>
+      <h2 class="reveal">Focus areas</h2>
+      <div class="cards">
+        <div class="card reveal"><span class="num">01</span><h3>Focus area 1</h3><p>Short description.</p></div>
+        <div class="card reveal"><span class="num">02</span><h3>Focus area 2</h3><p>Short description.</p></div>
+        <div class="card reveal"><span class="num">03</span><h3>Focus area 3</h3><p>Short description.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <p class="eyebrow reveal">How it works</p>
+      <h2 class="reveal">From idea to impact</h2>
+      <ol class="steps">
+        <li class="reveal"><h3>Research</h3><p>Placeholder step description.</p></li>
+        <li class="reveal"><h3>Build</h3><p>Placeholder step description.</p></li>
+        <li class="reveal"><h3>Share</h3><p>Placeholder step description.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="join" class="band cta">
+    <div class="wrap narrow reveal">
+      <h2>Join the Verein</h2>
+      <p>Become a member, volunteer, or support our work. We'd love to hear from you.</p>
+      <p><a class="button light" href={`${base}/contact/`}>Get in touch</a></p>
+    </div>
+  </section>
 </Base>
+
+<script>
+  // Fade sections in as they scroll into view.
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    }
+  }, { threshold: 0.15 });
+  items.forEach((el) => io.observe(el));
+
+  // Gentle parallax on the hero graphic.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const layers = document.querySelectorAll('[data-parallax]');
+  if (!reduce && layers.length) {
+    let ticking = false;
+    const update = () => {
+      const y = window.scrollY;
+      layers.forEach((el) => {
+        const speed = parseFloat(el.dataset.parallax || '0');
+        el.style.transform = `translate3d(0, ${y * speed}px, 0)`;
+      });
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+  }
+</script>
+
+<style>
+  .hero { position: relative; overflow: hidden; min-height: calc(100vh - 4.5rem); display: flex; align-items: center;
+    background: linear-gradient(180deg, #fbfaf7 0%, #f3efe4 100%); }
+  .hero-inner { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2rem; align-items: center; padding-block: 3rem; }
+  .hero h1 { font-size: clamp(2rem, 4.5vw, 3.2rem); }
+  .hero-art { max-width: 32rem; justify-self: center; width: 100%; will-change: transform; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 600; color: var(--muted); margin-bottom: .5rem; }
+  .actions { display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; }
+  .text-link { text-decoration: none; font-weight: 500; }
+
+  .band { padding-block: 6rem; }
+  .band.alt { background: #fff; border-block: 1px solid #e6e2d8; }
+  .band h2 { margin-top: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); }
+  .narrow { max-width: 38rem; text-align: center; }
+
+  .card .num { font-weight: 700; color: var(--highlight); font-size: 1.4rem; }
+  .steps { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1.5rem; counter-reset: s; }
+  .steps li { border-left: 3px solid var(--highlight); padding-left: 1rem; }
+  .steps h3 { margin: 0 0 .3rem; }
+
+  .cta { background: var(--accent); color: #fff; }
+  .cta h2 { color: #fff; }
+  .cta p { color: #dfe6ef; }
+  .button.light { background: var(--highlight); color: var(--ink); }
+
+  @media (max-width: 760px) {
+    .hero-inner { grid-template-columns: 1fr; text-align: center; }
+    .hero-art { max-width: 18rem; order: -1; }
+    .actions { justify-content: center; }
+    .band { padding-block: 4rem; }
+  }
+</style>
