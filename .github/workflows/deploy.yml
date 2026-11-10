@@ -35,22 +35,25 @@ jobs:
 
       - name: Password-protect pages (only if SITE_PASSWORD is set)
         if: env.SITE_PASSWORD != ''
-        working-directory: dist
         run: |
-          npx --yes staticrypt@3 . -r -d . \
+          npx --yes staticrypt@3 dist -r -d encrypted \
             -p "$SITE_PASSWORD" \
             --short \
             --remember 30 \
             --template-title "AttentionLab" \
             --template-instructions "This site is not public yet. Please enter the password."
-          rm -f .staticrypt.json
-          echo "HTML files after encryption:"
-          find . -name '*.html'
+          # StatiCrypt may keep the input path (encrypted/dist/...), so locate the
+          # top-level index.html and copy that folder's contents over dist/.
+          TOP=$(find encrypted -name index.html -printf '%d %h\n' | sort -n | head -1 | cut -d' ' -f2-)
+          echo "Encrypted output root: $TOP"
+          cp -r "$TOP"/. dist/
+          rm -rf encrypted .staticrypt.json dist/.staticrypt.json
           # Fail the deploy rather than publish unprotected pages.
-          if ! grep -qi staticrypt index.html; then
-            echo "::error::index.html is not encrypted - aborting deploy"
-            exit 1
-          fi
+          for f in $(find dist -name '*.html'); do
+            grep -qi staticrypt "$f" || { echo "::error::$f is not encrypted - aborting deploy"; exit 1; }
+          done
+          echo "All HTML pages encrypted:"
+          find dist -name '*.html'
 
       - uses: actions/upload-pages-artifact@v3
         with:
