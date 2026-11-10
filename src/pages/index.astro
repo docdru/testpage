@@ -33,7 +33,7 @@ const sections = await Promise.all(
       </section>
     ) : (
       <section id={id} class:list={['band', { alt: type === 'cards', cta: type === 'cta' }]}>
-        <div class:list={['wrap content', type, { narrow: type === 'text' || type === 'cta', reveal: type === 'text' || type === 'cta' }]}>
+        <div class:list={['wrap content', `sec-${type}`, { narrow: type === 'text' || type === 'cta', reveal: type === 'text' || type === 'cta' }]}>
           {eyebrow && <p class="eyebrow">{eyebrow}</p>}
           <Content />
           {buttons.length > 0 && (
@@ -49,7 +49,7 @@ const sections = await Promise.all(
 
 <script>
   // Fade sections in as they scroll into view.
-  document.querySelectorAll('.cards > .eyebrow, .cards > h2, .cards li, .steps > .eyebrow, .steps > h2, .steps li').forEach((li) => li.classList.add('reveal'));
+  document.querySelectorAll('.sec-cards > .eyebrow, .sec-cards > h2, .sec-cards li, .sec-steps > .eyebrow, .sec-steps > h2, .sec-steps li').forEach((li) => li.classList.add('reveal'));
   const items = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) {
@@ -97,11 +97,11 @@ const sections = await Promise.all(
   .content :global(ul), .content :global(ol) { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; gap: 1.5rem; }
   .content :global(li > strong:first-child), .content :global(li > p:first-child > strong:first-child) {
     display: block; font-size: 1.17em; margin-bottom: .3rem; }
-  .cards :global(ul) { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; counter-reset: card; }
-  .cards :global(li) { background: #fff; border: 1px solid #e6e2d8; border-radius: .5rem; padding: 1.1rem; counter-increment: card; }
-  .cards :global(li)::before { content: counter(card, decimal-leading-zero); display: block; font-weight: 700; color: var(--highlight); font-size: 1.4rem; }
-  .steps :global(ol) { grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
-  .steps :global(li) { border-left: 3px solid var(--highlight); padding-left: 1rem; }
+  .sec-cards :global(ul) { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; counter-reset: card; }
+  .sec-cards :global(li) { background: #fff; border: 1px solid #e6e2d8; border-radius: .5rem; padding: 1.1rem; counter-increment: card; }
+  .sec-cards :global(li)::before { content: counter(card, decimal-leading-zero); display: block; font-weight: 700; color: var(--highlight); font-size: 1.4rem; }
+  .sec-steps :global(ol) { grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+  .sec-steps :global(li) { border-left: 3px solid var(--highlight); padding-left: 1rem; }
   .content :global(p:last-child) { margin-bottom: 0; }
 
   .cta { background: var(--accent); color: #fff; }
