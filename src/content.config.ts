@@ -13,4 +13,15 @@ const home = defineCollection({
   }),
 });
 
-export const collections = { home };
+// Each Markdown file in src/content/pages/ becomes a page: about.md → /about/.
+const pages = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    // Set a number to show the page in the top menu, in that order.
+    menu: z.number().optional(),
+  }),
+});
+
+export const collections = { home, pages };

@@ -30,7 +30,7 @@ npm run dev        # http://localhost:4321/testpage/
 
 ## Editing content (from Notion)
 
-All text is in Markdown files, so you rarely need to touch HTML.
+All text is in Markdown files in `src/content/`, so you rarely need to touch HTML.
 
 ### Home page
 
@@ -65,9 +65,15 @@ To remove one, delete the file.
 
 ### Other pages
 
-- `src/pages/*.md` are plain Markdown pages. In Notion, use **⋯ → Export → Markdown**
-  and paste the text below the header block (`layout`, `title`).
-- A new file `src/pages/projects.md` becomes `/projects/`. Add it to the `nav` list
-  in `src/layouts/Base.astro`.
-- Colours and fonts are in `src/styles/global.css`. The layout of the home page
-  sections is in `src/pages/index.astro`.
+- Every file in `src/content/pages/` becomes a page: `about.md` is `/about/`.
+  In Notion, use **⋯ → Export → Markdown** and paste the text below the header block.
+- Each page needs a `title:` in its header. `description:` (for search engines) is optional.
+- Add `menu: 3` to show a page in the top menu; the number sets its position.
+  Pages without `menu:` (e.g. Impressum, Privacy) are only linked from the footer.
+- To add a page, create e.g. `src/content/pages/projects.md`; it appears at `/projects/`.
+
+### Where the code is
+
+All content is in `src/content/`. `src/pages/`, `src/layouts/` and
+`src/components/` hold the templates, and colours and fonts are in
+`src/styles/global.css`. You only need to touch these to change the design.

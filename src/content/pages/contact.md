@@ -1,6 +1,6 @@
 ---
-layout: ../layouts/Base.astro
 title: Contact
+menu: 2
 ---
 
 # Contact
