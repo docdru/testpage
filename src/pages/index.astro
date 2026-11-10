@@ -1,70 +1,55 @@
 ---
+import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import HeroGraphic from '../components/HeroGraphic.astro';
+
+// The text of this page lives in src/content/home/*.md, one file per section.
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const link = (href) => (href.startsWith('/') ? `${base}${href}` : href);
+
+const entries = (await getCollection('home')).sort((a, b) => a.data.order - b.data.order);
+const sections = await Promise.all(
+  entries.map(async (entry) => ({ ...entry.data, Content: (await render(entry)).Content })),
+);
 ---
 <Base title="Home" description="AttentionLab is a Swiss nonprofit association." wide>
-  <section class="hero">
-    <div class="wrap hero-inner">
-      <div class="hero-text reveal">
-        <p class="eyebrow">Swiss nonprofit association</p>
-        <h1>Placeholder headline about what AttentionLab stands for</h1>
-        <p class="lead">One or two sentences on the mission. Replace this with the intro you drafted in Notion.</p>
-        <p class="actions">
-          <a class="button" href="#join">Get involved</a>
-          <a class="text-link" href="#mission">Learn more ↓</a>
-        </p>
-      </div>
-      <div class="hero-art" data-parallax="0.15">
-        <HeroGraphic />
-      </div>
-    </div>
-  </section>
-
-  <section id="mission" class="band">
-    <div class="wrap narrow reveal">
-      <p class="eyebrow">Our mission</p>
-      <h2>A short, memorable statement of why we exist.</h2>
-      <p>Two or three sentences expanding on the mission: the problem you see, who it affects,
-        and what AttentionLab wants to change.</p>
-    </div>
-  </section>
-
-  <section class="band alt">
-    <div class="wrap">
-      <p class="eyebrow reveal">What we do</p>
-      <h2 class="reveal">Focus areas</h2>
-      <div class="cards">
-        <div class="card reveal"><span class="num">01</span><h3>Focus area 1</h3><p>Short description.</p></div>
-        <div class="card reveal"><span class="num">02</span><h3>Focus area 2</h3><p>Short description.</p></div>
-        <div class="card reveal"><span class="num">03</span><h3>Focus area 3</h3><p>Short description.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="band">
-    <div class="wrap">
-      <p class="eyebrow reveal">How it works</p>
-      <h2 class="reveal">From idea to impact</h2>
-      <ol class="steps">
-        <li class="reveal"><h3>Research</h3><p>Placeholder step description.</p></li>
-        <li class="reveal"><h3>Build</h3><p>Placeholder step description.</p></li>
-        <li class="reveal"><h3>Share</h3><p>Placeholder step description.</p></li>
-      </ol>
-    </div>
-  </section>
-
-  <section id="join" class="band cta">
-    <div class="wrap narrow reveal">
-      <h2>Join the Verein</h2>
-      <p>Become a member, volunteer, or support our work. We'd love to hear from you.</p>
-      <p><a class="button light" href={`${base}/contact/`}>Get in touch</a></p>
-    </div>
-  </section>
+  {sections.map(({ type, id, eyebrow, buttons, Content }) =>
+    type === 'hero' ? (
+      <section id={id} class="hero">
+        <div class="wrap hero-inner">
+          <div class="hero-text content reveal">
+            {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+            <Content />
+            {buttons.length > 0 && (
+              <p class="actions">
+                {buttons.map((b, i) => <a class={i === 0 ? 'button' : 'text-link'} href={link(b.href)}>{b.label}</a>)}
+              </p>
+            )}
+          </div>
+          <div class="hero-art" data-parallax="0.15">
+            <HeroGraphic />
+          </div>
+        </div>
+      </section>
+    ) : (
+      <section id={id} class:list={['band', { alt: type === 'cards', cta: type === 'cta' }]}>
+        <div class:list={['wrap content', type, { narrow: type === 'text' || type === 'cta', reveal: type === 'text' || type === 'cta' }]}>
+          {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+          <Content />
+          {buttons.length > 0 && (
+            <p class="actions">
+              {buttons.map((b) => <a class:list={['button', { light: type === 'cta' }]} href={link(b.href)}>{b.label}</a>)}
+            </p>
+          )}
+        </div>
+      </section>
+    )
+  )}
 </Base>
 
 <script>
   // Fade sections in as they scroll into view.
+  document.querySelectorAll('.cards > .eyebrow, .cards > h2, .cards li, .steps > .eyebrow, .steps > h2, .steps li').forEach((li) => li.classList.add('reveal'));
   const items = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) {
@@ -96,7 +81,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   .hero { position: relative; overflow: hidden; min-height: calc(100vh - 4.5rem); display: flex; align-items: center;
     background: linear-gradient(180deg, #fbfaf7 0%, #f3efe4 100%); }
   .hero-inner { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2rem; align-items: center; padding-block: 3rem; }
-  .hero h1 { font-size: clamp(2rem, 4.5vw, 3.2rem); }
+  .hero :global(h1) { font-size: clamp(2rem, 4.5vw, 3.2rem); }
+  .hero-text :global(h1 + p) { font-size: 1.2rem; color: var(--muted); }
   .hero-art { max-width: 32rem; justify-self: center; width: 100%; will-change: transform; }
   .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 600; color: var(--muted); margin-bottom: .5rem; }
   .actions { display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; }
@@ -104,17 +90,24 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   .band { padding-block: 6rem; }
   .band.alt { background: #fff; border-block: 1px solid #e6e2d8; }
-  .band h2 { margin-top: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); }
+  .band :global(h2) { margin-top: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); }
   .narrow { max-width: 38rem; text-align: center; }
 
-  .card .num { font-weight: 700; color: var(--highlight); font-size: 1.4rem; }
-  .steps { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1.5rem; counter-reset: s; }
-  .steps li { border-left: 3px solid var(--highlight); padding-left: 1rem; }
-  .steps h3 { margin: 0 0 .3rem; }
+  /* Markdown lists become cards and steps. A bold phrase at the start of an item is its heading. */
+  .content :global(ul), .content :global(ol) { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; gap: 1.5rem; }
+  .content :global(li > strong:first-child), .content :global(li > p:first-child > strong:first-child) {
+    display: block; font-size: 1.17em; margin-bottom: .3rem; }
+  .cards :global(ul) { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; counter-reset: card; }
+  .cards :global(li) { background: #fff; border: 1px solid #e6e2d8; border-radius: .5rem; padding: 1.1rem; counter-increment: card; }
+  .cards :global(li)::before { content: counter(card, decimal-leading-zero); display: block; font-weight: 700; color: var(--highlight); font-size: 1.4rem; }
+  .steps :global(ol) { grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+  .steps :global(li) { border-left: 3px solid var(--highlight); padding-left: 1rem; }
+  .content :global(p:last-child) { margin-bottom: 0; }
 
   .cta { background: var(--accent); color: #fff; }
-  .cta h2 { color: #fff; }
-  .cta p { color: #dfe6ef; }
+  .cta :global(h2) { color: #fff; }
+  .cta :global(p) { color: #dfe6ef; }
+  .narrow .actions { justify-content: center; }
   .button.light { background: var(--highlight); color: var(--ink); }
 
   @media (max-width: 760px) {
