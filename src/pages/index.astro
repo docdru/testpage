@@ -42,7 +42,7 @@ const sections = await Promise.all(
     if (s.type === 'feature') return (
       <section id={s.id} class:list={['band', { alt: s.alt }]}>
         <div class="wrap feature">
-          {s.image && <Image src={s.image} alt={s.imageAlt} widths={[640, 1280]} sizes="(max-width: 760px) 100vw, 50vw" class="feature-img reveal" />}
+          {s.image && <Image src={s.image} alt={s.imageAlt} width={1280} widths={[640, 1280]} sizes="(max-width: 760px) 100vw, 50vw" class="feature-img reveal" />}
           <div class="prose reveal">
             {s.eyebrow && <p class="eyebrow">{s.eyebrow}</p>}
             <Content />
