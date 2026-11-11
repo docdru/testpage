@@ -12,5 +12,7 @@ const { page } = Astro.props;
 const { Content } = await render(page);
 ---
 <Base title={page.data.title} description={page.data.description}>
-  <Content />
+  <div class="wrap prose page">
+    <Content />
+  </div>
 </Base>

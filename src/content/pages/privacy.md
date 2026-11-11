@@ -1,12 +1,8 @@
 ---
-title: Privacy
+title: Privacy Policy
 ---
 
-# Privacy policy
+# Privacy Policy
 
-Placeholder. Mention at least:
-
-- who is responsible (the Verein, contact address),
-- that the site is hosted on GitHub Pages (GitHub Inc., USA), which processes
-  visitors' IP addresses in server logs,
-- any external services used (form provider, analytics), or that there are none.
+Placeholder. The original site links to a PDF privacy policy. Put the text here, or add
+the PDF to `public/` and point the footer link in `src/content/site.md` to it.

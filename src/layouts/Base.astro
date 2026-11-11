@@ -1,56 +1,71 @@
 ---
-import { getCollection } from 'astro:content';
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import { link, isExternal } from '../lib/links.js';
 import '../styles/global.css';
 
-const { title, description, wide = false } = Astro.props;
-
-// Build links that respect the `base` setting (needed on GitHub Pages project sites).
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const link = (path) => `${base}${path}`;
+const { title, description } = Astro.props;
+const site = (await getEntry('site', 'site')).data;
 const current = Astro.url.pathname.replace(/\/$/, '') || '/';
-const isCurrent = (path) => (link(path).replace(/\/$/, '') || '/') === current;
-
-// Top menu: Home, then every page in src/content/pages/ that has `menu:` set.
-const menuPages = (await getCollection('pages', (p) => p.data.menu !== undefined))
-  .sort((a, b) => a.data.menu - b.data.menu);
-const nav = [
-  { href: '/', label: 'Home' },
-  ...menuPages.map((p) => ({ href: `/${p.id}/`, label: p.data.title })),
-];
+const isCurrent = (href) => (link(href).replace(/\/$/, '') || '/') === current;
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title ? `${title} · AttentionLab` : 'AttentionLab'}</title>
+    <title>{title ? `${title} · ${site.name}` : site.name}</title>
     {description && <meta name="description" content={description} />}
-    <script is:inline>document.documentElement.classList.add('js');</script>
-    <link rel="icon" type="image/svg+xml" href={link('/favicon.svg')} />
+    <link rel="icon" type="image/png" href={link('/favicon.png')} />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      try {
+        const t = localStorage.getItem('theme');
+        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      } catch {}
+    </script>
   </head>
   <body>
-    <header>
+    <header class="site-header">
       <div class="wrap">
-        <a class="logo" href={link('/')}>Attention<span>Lab</span></a>
+        <a class="logo" href={link('/')}>
+          {site.logo && <Image src={site.logo} alt="" width={36} height={36} />}
+          <span>{site.name}</span>
+        </a>
         <nav>
-          {nav.map((item) => (
-            <a href={link(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>
-              {item.label}
-            </a>
+          {site.menu.map((item) => (
+            <a href={link(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}
+              {...(isExternal(item.href) ? { rel: 'noopener' } : {})}>{item.label}</a>
           ))}
+          <button class="theme-toggle" type="button" aria-label="Toggle theme">◐</button>
         </nav>
       </div>
     </header>
-    <main class:list={[{ wide }]}>
-      <div class:list={[wide ? 'full' : 'wrap']}>
-        <slot />
-      </div>
+    <main>
+      <slot />
     </main>
-    <footer>
+    <footer class="site-footer">
       <div class="wrap">
-        <span>© {new Date().getFullYear()} AttentionLab · Verein</span>
-        <span><a href={link('/impressum/')}>Impressum</a> · <a href={link('/privacy/')}>Privacy</a></span>
+        <a class="logo small" href={link('/')}>
+          {site.logo && <Image src={site.logo} alt="" width={24} height={24} />}
+          <span>{site.name}</span>
+        </a>
+        {site.copyright && <span>© {new Date().getFullYear()} · {site.copyright}</span>}
+        <span class="footer-links">
+          {site.footerLinks.map((l) => <a href={link(l.href)}>{l.label}</a>)}
+        </span>
       </div>
+      {site.footer && <p class="wrap footer-note">{site.footer}</p>}
     </footer>
+    <script>
+      document.querySelector('.theme-toggle')?.addEventListener('click', () => {
+        const root = document.documentElement;
+        const dark = root.dataset.theme !== 'dark';
+        if (dark) root.dataset.theme = 'dark'; else delete root.dataset.theme;
+        try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch {}
+      });
+    </script>
   </body>
 </html>

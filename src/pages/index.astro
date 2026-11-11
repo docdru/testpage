@@ -1,73 +1,87 @@
 ---
 import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import HeroGraphic from '../components/HeroGraphic.astro';
+import { link } from '../lib/links.js';
 
 // The text of this page lives in src/content/home/*.md, one file per section.
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const link = (href) => (href.startsWith('/') ? `${base}${href}` : href);
-
 const entries = (await getCollection('home')).sort((a, b) => a.data.order - b.data.order);
 const sections = await Promise.all(
   entries.map(async (entry) => ({ ...entry.data, Content: (await render(entry)).Content })),
 );
 ---
-<Base title="Home" description="AttentionLab is a Swiss nonprofit association." wide>
-  {sections.map(({ type, id, eyebrow, buttons, Content }) =>
-    type === 'hero' ? (
-      <section id={id} class="hero">
+<Base>
+  {sections.map((s) => {
+    const { Content } = s;
+    const buttons = s.buttons.length > 0 && (
+      <p class="actions">
+        {s.buttons.map((b, i) => (
+          <a class:list={['button', { secondary: i > 0 && s.type === 'hero' }]} href={link(b.href)}>{b.label}</a>
+        ))}
+      </p>
+    );
+
+    if (s.type === 'hero') return (
+      <section id={s.id} class="hero">
         <div class="wrap hero-inner">
-          <div class="hero-text content reveal">
-            {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+          <div class="hero-text prose reveal">
+            {s.eyebrow && <p class="eyebrow">{s.eyebrow}</p>}
             <Content />
-            {buttons.length > 0 && (
-              <p class="actions">
-                {buttons.map((b, i) => <a class={i === 0 ? 'button' : 'text-link'} href={link(b.href)}>{b.label}</a>)}
-              </p>
-            )}
+            {buttons}
           </div>
-          <div class="hero-art" data-parallax="0.15">
-            <HeroGraphic />
+          <div class="hero-art reveal" data-parallax="0.08">
+            {s.images.map((img, i) => (
+              <Image src={img.src} alt={img.alt} widths={[240, 480]} sizes="(max-width: 760px) 40vw, 240px"
+                class:list={['shot', i === 0 ? 'phone' : 'watch']} loading="eager" />
+            ))}
           </div>
         </div>
       </section>
-    ) : (
-      <section id={id} class:list={['band', { alt: type === 'cards', cta: type === 'cta' }]}>
-        <div class:list={['wrap content', `sec-${type}`, { narrow: type === 'text' || type === 'cta', reveal: type === 'text' || type === 'cta' }]}>
-          {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    );
+
+    if (s.type === 'feature') return (
+      <section id={s.id} class:list={['band', { alt: s.alt }]}>
+        <div class="wrap feature">
+          {s.image && <Image src={s.image} alt={s.imageAlt} width={1280} widths={[640, 1280]} sizes="(max-width: 760px) 100vw, 50vw" class="feature-img reveal" />}
+          <div class="prose reveal">
+            {s.eyebrow && <p class="eyebrow">{s.eyebrow}</p>}
+            <Content />
+            {buttons}
+          </div>
+        </div>
+      </section>
+    );
+
+    return (
+      <section id={s.id} class:list={['band', `sec-${s.type}`, { alt: s.alt, cta: s.type === 'cta' }]}>
+        <div class:list={['wrap prose', `style-${s.style}`, { reveal: s.type === 'text' || s.type === 'cta' }]}>
+          {s.eyebrow && <p class="eyebrow">{s.eyebrow}</p>}
           <Content />
-          {buttons.length > 0 && (
-            <p class="actions">
-              {buttons.map((b) => <a class:list={['button', { light: type === 'cta' }]} href={link(b.href)}>{b.label}</a>)}
-            </p>
-          )}
+          {buttons}
         </div>
       </section>
-    )
-  )}
+    );
+  })}
 </Base>
 
 <script>
-  // Fade sections in as they scroll into view.
-  document.querySelectorAll('.sec-cards > .eyebrow, .sec-cards > h2, .sec-cards li, .sec-steps > .eyebrow, .sec-steps > h2, .sec-steps li').forEach((li) => li.classList.add('reveal'));
-  const items = document.querySelectorAll('.reveal');
+  // Fade content in as it scrolls into view.
+  document.querySelectorAll('.sec-gallery li, .sec-cards li, .sec-steps li').forEach((el) => el.classList.add('reveal'));
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) {
       if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
     }
-  }, { threshold: 0.15 });
-  items.forEach((el) => io.observe(el));
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
-  // Gentle parallax on the hero graphic.
+  // Gentle parallax on the hero screenshots.
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const layers = document.querySelectorAll('[data-parallax]');
   if (!reduce && layers.length) {
     let ticking = false;
     const update = () => {
-      const y = window.scrollY;
       layers.forEach((el) => {
-        const speed = parseFloat(el.dataset.parallax || '0');
-        el.style.transform = `translate3d(0, ${y * speed}px, 0)`;
+        el.style.translate = `0 ${window.scrollY * parseFloat(el.dataset.parallax || '0')}px`;
       });
       ticking = false;
     };
@@ -76,44 +90,3 @@ const sections = await Promise.all(
     }, { passive: true });
   }
 </script>
-
-<style>
-  .hero { position: relative; overflow: hidden; min-height: calc(100vh - 4.5rem); display: flex; align-items: center;
-    background: linear-gradient(180deg, #fbfaf7 0%, #f3efe4 100%); }
-  .hero-inner { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2rem; align-items: center; padding-block: 3rem; }
-  .hero :global(h1) { font-size: clamp(2rem, 4.5vw, 3.2rem); }
-  .hero-text :global(h1 + p) { font-size: 1.2rem; color: var(--muted); }
-  .hero-art { max-width: 32rem; justify-self: center; width: 100%; will-change: transform; }
-  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 600; color: var(--muted); margin-bottom: .5rem; }
-  .actions { display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; }
-  .text-link { text-decoration: none; font-weight: 500; }
-
-  .band { padding-block: 6rem; }
-  .band.alt { background: #fff; border-block: 1px solid #e6e2d8; }
-  .band :global(h2) { margin-top: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); }
-  .narrow { max-width: 38rem; text-align: center; }
-
-  /* Markdown lists become cards and steps. A bold phrase at the start of an item is its heading. */
-  .content :global(ul), .content :global(ol) { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; gap: 1.5rem; }
-  .content :global(li > strong:first-child), .content :global(li > p:first-child > strong:first-child) {
-    display: block; font-size: 1.17em; margin-bottom: .3rem; }
-  .sec-cards :global(ul) { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; counter-reset: card; }
-  .sec-cards :global(li) { background: #fff; border: 1px solid #e6e2d8; border-radius: .5rem; padding: 1.1rem; counter-increment: card; }
-  .sec-cards :global(li)::before { content: counter(card, decimal-leading-zero); display: block; font-weight: 700; color: var(--highlight); font-size: 1.4rem; }
-  .sec-steps :global(ol) { grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
-  .sec-steps :global(li) { border-left: 3px solid var(--highlight); padding-left: 1rem; }
-  .content :global(p:last-child) { margin-bottom: 0; }
-
-  .cta { background: var(--accent); color: #fff; }
-  .cta :global(h2) { color: #fff; }
-  .cta :global(p) { color: #dfe6ef; }
-  .narrow .actions { justify-content: center; }
-  .button.light { background: var(--highlight); color: var(--ink); }
-
-  @media (max-width: 760px) {
-    .hero-inner { grid-template-columns: 1fr; text-align: center; }
-    .hero-art { max-width: 18rem; order: -1; }
-    .actions { justify-content: center; }
-    .band { padding-block: 4rem; }
-  }
-</style>
