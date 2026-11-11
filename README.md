@@ -1,4 +1,6 @@
-# AttentionLab website
+# FocusWatch website (practice rebuild)
+
+A practice rebuild of focus-watch.com. Team names and email addresses are placeholders.
 
 A small static site built with [Astro](https://astro.build) and deployed to GitHub Pages.
 
@@ -28,52 +30,44 @@ npm run dev        # http://localhost:4321/testpage/
    domain (listed in GitHub's Pages documentation).
 4. Enter the domain under **Settings → Pages** and tick **Enforce HTTPS**.
 
-## Editing content (from Notion)
+## Editing content
 
-All text is in Markdown files in `src/content/`, so you rarely need to touch HTML.
+All text and images are in `src/content/`, so you rarely need to touch HTML.
 
-### Home page
-
-The home page is built from the files in `src/content/home/`, one file per section,
-shown in the order given by `order:`. Edit the text below the `---` header block.
-
-| File | Section |
+| Where | What |
 | --- | --- |
-| `01-hero.md` | Big intro at the top: a `#` headline and a short paragraph |
-| `02-mission.md` | Mission statement |
-| `03-focus-areas.md` | Cards: one bullet per card |
-| `04-how-it-works.md` | Steps: one numbered item per step |
-| `05-join.md` | Call to action at the bottom |
+| `src/content/site.md` | Site name, logo, top menu, footer links and note |
+| `src/content/home/*.md` | The home page, one file per section, in the order given by `order:` |
+| `src/content/pages/*.md` | Other pages: `privacy.md` becomes `/privacy/` |
+| `src/content/images/` | All images. Reference them from Markdown as `../images/name.png` |
 
-In card and step lists, start each item with a **bold phrase**; it becomes the heading:
+Images are resized and converted automatically when the site is built, so large
+originals are fine.
 
-```markdown
-- **Focus area 1** Short description.
-```
+### Home page sections
 
-Header fields you can set in each file:
+Each file has a header between `---` lines, then the text in Markdown. Header fields:
 
 - `order`: position on the page (1 = top).
-- `type`: the look of the section: `hero`, `text`, `cards`, `steps` or `cta`.
-- `eyebrow`: the small capitalised line above the heading (optional).
-- `id`: an anchor name, so a link to `#id` scrolls there (optional).
-- `buttons`: a list of `label` and `href`. Links starting with `/` go to a page on this
-  site, e.g. `/contact/`.
+- `type`: the look of the section:
+  - `hero`: big intro with screenshots (`images:` list) and `buttons:`.
+  - `text`: headings, paragraphs and bullet lists.
+  - `feature`: text next to one large `image:`.
+  - `gallery`: a grid of screenshots. Each bullet is one image plus a **bold** title,
+    e.g. `- ![Focus timer](../images/watch-pomodoro.png) **Focus timer**`.
+    `style: watch` draws a watch bezel, `style: phone` a phone frame.
+  - `cards`: each bullet becomes a card; start it with a **bold** title.
+  - `steps`: a numbered list shown as steps.
+  - `cta`: coloured contact band with `buttons:`.
+- `alt: true`: light grey background, to alternate sections.
+- `eyebrow`: small capitalised line above the heading (optional).
+- `id`: anchor name, so a link to `#id` scrolls there (optional).
+- `buttons`: list of `label` and `href`. Links starting with `/` go to a page on this site.
 
 To add a section, copy a file, give it a new name and `order`, and change the text.
 To remove one, delete the file.
 
-### Other pages
-
-- Every file in `src/content/pages/` becomes a page: `about.md` is `/about/`.
-  In Notion, use **⋯ → Export → Markdown** and paste the text below the header block.
-- Each page needs a `title:` in its header. `description:` (for search engines) is optional.
-- Add `menu: 3` to show a page in the top menu; the number sets its position.
-  Pages without `menu:` (e.g. Impressum, Privacy) are only linked from the footer.
-- To add a page, create e.g. `src/content/pages/projects.md`; it appears at `/projects/`.
-
 ### Where the code is
 
-All content is in `src/content/`. `src/pages/`, `src/layouts/` and
-`src/components/` hold the templates, and colours and fonts are in
-`src/styles/global.css`. You only need to touch these to change the design.
+`src/pages/`, `src/layouts/` and `src/lib/` hold the templates, and colours and fonts are
+at the top of `src/styles/global.css`. You only need to touch these to change the design.
