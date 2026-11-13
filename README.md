@@ -44,9 +44,9 @@ All text and images are in `src/content/`, so you rarely need to touch HTML.
 
 | Where | What |
 | --- | --- |
-| `src/content/site.md` | Site name, top menu, notice bands; the text below the header is the footer |
+| `src/content/site/de.md`, `en.md` | Site name, top menu and notice band per language; the text below the header is the footer |
 | `src/content/home/de/*.md` | The German home page, one file per block, in the order given by `order:` |
-| `src/content/home/en/*.md` | The English home page (empty for now: `/en/` shows the German text with a "translation in preparation" band) |
+| `src/content/home/en/*.md` | The English home page at `/en/`, same file names as the German one. If this folder is empty, `/en/` shows the German text with a "translation in preparation" band |
 | `src/content/pages/*.md` | Other pages: `datenschutz.md` becomes `/datenschutz/` |
 | `src/content/images/` | All images. Reference them from Markdown as `../../images/name.png` |
 
