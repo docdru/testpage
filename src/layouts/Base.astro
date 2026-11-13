@@ -1,71 +1,55 @@
 ---
-import { getEntry } from 'astro:content';
-import { Image } from 'astro:assets';
-import { link, isExternal } from '../lib/links.js';
+import { getEntry, render } from 'astro:content';
+import Logo from '../components/Logo.astro';
+import { link, localLink, isExternal, marked } from '../lib/links.js';
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource-variable/instrument-sans';
 import '../styles/global.css';
 
-const { title, description } = Astro.props;
-const site = (await getEntry('site', 'site')).data;
-const current = Astro.url.pathname.replace(/\/$/, '') || '/';
-const isCurrent = (href) => (link(href).replace(/\/$/, '') || '/') === current;
+// lang: 'de' or 'en'. translated: false shows the "English version in preparation" band.
+const { title, description, lang = 'de', translated = true } = Astro.props;
+const entry = await getEntry('site', 'site');
+const site = entry.data;
+const { Content: Footer } = await render(entry);
 ---
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title ? `${title} · ${site.name}` : site.name}</title>
     {description && <meta name="description" content={description} />}
-    <link rel="icon" type="image/png" href={link('/favicon.png')} />
-    <script is:inline>
-      document.documentElement.classList.add('js');
-      try {
-        const t = localStorage.getItem('theme');
-        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.dataset.theme = 'dark';
-        }
-      } catch {}
-    </script>
+    <link rel="icon" type="image/svg+xml" href={link('/favicon.svg')} />
+    <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
     <header class="site-header">
       <div class="wrap">
-        <a class="logo" href={link('/')}>
-          {site.logo && <Image src={site.logo} alt="" width={36} height={36} />}
-          <span>{site.name}</span>
-        </a>
-        <nav>
+        <div class="header-row">
+          <a class="logo" href={localLink('/', lang)}><Logo /><span>{site.name}</span></a>
+          <div class="lang-switch" role="group" aria-label="Sprache / Language">
+            <a href={link('/')} aria-current={lang === 'de' ? 'true' : undefined} lang="de">DE</a>
+            <a href={link('/en/')} aria-current={lang === 'en' ? 'true' : undefined} lang="en">EN</a>
+          </div>
+        </div>
+        <nav aria-label="Hauptnavigation">
           {site.menu.map((item) => (
-            <a href={link(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}
-              {...(isExternal(item.href) ? { rel: 'noopener' } : {})}>{item.label}</a>
+            <a href={localLink(item.href, lang)} {...(isExternal(item.href) ? { rel: 'noopener' } : {})}>{item.label}</a>
           ))}
-          <button class="theme-toggle" type="button" aria-label="Toggle theme">◐</button>
         </nav>
       </div>
     </header>
+    {site.notice && <p class="notice"><span class="wrap" set:html={marked(site.notice)} /></p>}
+    {!translated && site.translationNotice && (
+      <p class="notice translation" lang="en"><span class="wrap" set:html={marked(site.translationNotice)} /></p>
+    )}
     <main>
       <slot />
     </main>
     <footer class="site-footer">
       <div class="wrap">
-        <a class="logo small" href={link('/')}>
-          {site.logo && <Image src={site.logo} alt="" width={24} height={24} />}
-          <span>{site.name}</span>
-        </a>
-        {site.copyright && <span>© {new Date().getFullYear()} · {site.copyright}</span>}
-        <span class="footer-links">
-          {site.footerLinks.map((l) => <a href={link(l.href)}>{l.label}</a>)}
-        </span>
+        <Footer />
       </div>
-      {site.footer && <p class="wrap footer-note">{site.footer}</p>}
     </footer>
-    <script>
-      document.querySelector('.theme-toggle')?.addEventListener('click', () => {
-        const root = document.documentElement;
-        const dark = root.dataset.theme !== 'dark';
-        if (dark) root.dataset.theme = 'dark'; else delete root.dataset.theme;
-        try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch {}
-      });
-    </script>
   </body>
 </html>

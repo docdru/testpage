@@ -1,20 +1,25 @@
 ---
-# Site-wide settings: name, logo, menu and footer.
-name: FocusWatch
-logo: ./images/logo.png
-email: team@example.org
+# Site-wide settings: name, menu and notices. The text below the second --- is the footer.
+name: AttentionLab
 menu:
-  - label: Project
-    href: /
-  - label: Testers
-    href: https://focus-watch.com/tester-login
-  - label: Internal
-    href: https://focus-watch.com/admin-login
-copyright: ZHAW · All rights reserved
-footer: "Practice rebuild of focus-watch.com, not the official FocusWatch website."
-footerLinks:
-  - label: Privacy Policy
-    href: /privacy/
-  - label: Contact
-    href: mailto:team@example.org
+  - label: Warum
+    href: /#warum
+  - label: FocusWatch
+    href: /#focuswatch
+  - label: Forschung
+    href: /#forschung
+  - label: Mitmachen
+    href: /#mitmachen
+  - label: Über uns
+    href: /#ueber-uns
+  - label: Kontakt
+    href: /#kontakt
+notice: "Prototyp zur Diskussion im Team (Stand 11.11.2026). Gelb markierte Stellen fehlen noch."
+translationNotice: "English version in preparation. The team will translate once the German copy is final."
 ---
+
+- © 2026 Verein AttentionLab
+- UID CHE-494.850.793
+- [Impressum](/impressum/) ==[folgt]==
+- [Datenschutz](/datenschutz/) ==[folgt]==
+- Statuten ==[PDF]==

@@ -1,0 +1,31 @@
+---
+// Hero picture: rings of coloured dots around a yellow centre ("a small impulse
+// that spreads"). Generated here so it stays sharp at any size.
+const colors = ['var(--navy)', 'var(--coral)', 'var(--yellow)', 'var(--green)', 'var(--blue)'];
+const rings = [
+  { radius: 42, count: 8, size: [5, 6] },
+  { radius: 82, count: 13, size: [5, 7.5] },
+  { radius: 120, count: 18, size: [4.5, 9] },
+];
+// Small fixed pseudo-random sequence, so the picture is the same on every build.
+let seed = 7;
+const rand = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+const dots = rings.flatMap((ring, r) =>
+  Array.from({ length: ring.count }, (_, i) => {
+    const angle = (i / ring.count) * Math.PI * 2 + r * 0.35 - Math.PI / 2;
+    return {
+      x: Math.cos(angle) * ring.radius,
+      y: Math.sin(angle) * ring.radius,
+      r: ring.size[0] + rand() * (ring.size[1] - ring.size[0]),
+      fill: colors[Math.floor(rand() * colors.length)],
+      ring: r,
+    };
+  }),
+);
+---
+<svg class="dots-art" viewBox="-140 -140 280 280" role="img" aria-label="Farbige Punkte, die von einem gelben Zentrum ausgehen">
+  <circle class="core" r="24" fill="var(--yellow)" />
+  {dots.map((d) => (
+    <circle class={`ring ring-${d.ring}`} cx={d.x.toFixed(1)} cy={d.y.toFixed(1)} r={d.r.toFixed(1)} fill={d.fill} />
+  ))}
+</svg>
