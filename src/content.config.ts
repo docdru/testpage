@@ -8,10 +8,10 @@ const link = z.object({
   variant: z.enum(['primary', 'outline']).optional(),
 });
 
-// src/content/site.md: name, menu and notices. The Markdown text below the
-// header is the footer.
+// src/content/site/de.md and en.md: name, menu and notices per language.
+// The Markdown text below the header is the footer.
 const site = defineCollection({
-  loader: glob({ pattern: 'site.md', base: './src/content' }),
+  loader: glob({ pattern: '*.md', base: './src/content/site' }),
   schema: z.object({
     name: z.string(),
     menu: z.array(link).default([]),

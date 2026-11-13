@@ -8,7 +8,7 @@ import '../styles/global.css';
 
 // lang: 'de' or 'en'. translated: false shows the "English version in preparation" band.
 const { title, description, lang = 'de', translated = true } = Astro.props;
-const entry = await getEntry('site', 'site');
+const entry = (await getEntry('site', lang)) ?? (await getEntry('site', 'de'));
 const site = entry.data;
 const { Content: Footer } = await render(entry);
 ---
@@ -32,7 +32,7 @@ const { Content: Footer } = await render(entry);
             <a href={link('/en/')} aria-current={lang === 'en' ? 'true' : undefined} lang="en">EN</a>
           </div>
         </div>
-        <nav aria-label="Hauptnavigation">
+        <nav aria-label={lang === 'en' ? 'Main navigation' : 'Hauptnavigation'}>
           {site.menu.map((item) => (
             <a href={localLink(item.href, lang)} {...(isExternal(item.href) ? { rel: 'noopener' } : {})}>{item.label}</a>
           ))}
