@@ -4,6 +4,13 @@ A practice rebuild of focus-watch.com. Team names and email addresses are placeh
 
 A small static site built with [Astro](https://astro.build) and deployed to GitHub Pages.
 
+## How we edit this site (2-minute video)
+
+How the team updates the site with Claude, GitHub and Astro, from adding a new
+section to fixing a typo without any code.
+
+https://github.com/user-attachments/assets/9a8527c4-6f3d-42dc-a0ff-8ea027ed7a6a
+
 ## Run it locally
 
 ```bash
