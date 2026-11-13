@@ -1,8 +1,9 @@
-# FocusWatch website (practice rebuild)
+# AttentionLab website (prototype)
 
-A practice rebuild of focus-watch.com. Team names and email addresses are placeholders.
+Prototype of the AttentionLab association website, for discussion in the team.
+Parts highlighted in yellow are still missing.
 
-A small static site built with [Astro](https://astro.build) and deployed to GitHub Pages.
+A small static site built with [Astro](https://astro.build). It runs on any static host; today it is deployed to GitHub Pages.
 
 ## How we edit this site (2-minute video)
 
@@ -43,38 +44,45 @@ All text and images are in `src/content/`, so you rarely need to touch HTML.
 
 | Where | What |
 | --- | --- |
-| `src/content/site.md` | Site name, logo, top menu, footer links and note |
-| `src/content/home/*.md` | The home page, one file per section, in the order given by `order:` |
-| `src/content/pages/*.md` | Other pages: `privacy.md` becomes `/privacy/` |
-| `src/content/images/` | All images. Reference them from Markdown as `../images/name.png` |
+| `src/content/site.md` | Site name, top menu, notice bands; the text below the header is the footer |
+| `src/content/home/de/*.md` | The German home page, one file per block, in the order given by `order:` |
+| `src/content/home/en/*.md` | The English home page (empty for now: `/en/` shows the German text with a "translation in preparation" band) |
+| `src/content/pages/*.md` | Other pages: `datenschutz.md` becomes `/datenschutz/` |
+| `src/content/images/` | All images. Reference them from Markdown as `../../images/name.png` |
 
-Images are resized and converted automatically when the site is built, so large
-originals are fine.
+Write `==[text]==` to highlight something that is still missing or undecided in yellow,
+e.g. `==[Link prüfen]==`. Links starting with `/` (e.g. `[Datenschutz](/datenschutz/)`)
+work in Markdown too.
 
-### Home page sections
+### Home page blocks
 
 Each file has a header between `---` lines, then the text in Markdown. Header fields:
 
 - `order`: position on the page (1 = top).
-- `type`: the look of the section:
-  - `hero`: big intro with screenshots (`images:` list) and `buttons:`.
-  - `text`: headings, paragraphs and bullet lists.
-  - `feature`: text next to one large `image:`.
-  - `gallery`: a grid of screenshots. Each bullet is one image plus a **bold** title,
-    e.g. `- ![Focus timer](../images/watch-pomodoro.png) **Focus timer**`.
-    `style: watch` draws a watch bezel, `style: phone` a phone frame.
-  - `cards`: each bullet becomes a card; start it with a **bold** title.
-  - `steps`: a numbered list shown as steps.
-  - `cta`: coloured contact band with `buttons:`.
-- `alt: true`: light grey background, to alternate sections.
-- `eyebrow`: small capitalised line above the heading (optional).
-- `id`: anchor name, so a link to `#id` scrolls there (optional).
-- `buttons`: list of `label` and `href`. Links starting with `/` go to a page on this site.
+- `section`: starts a new section; the value is its anchor (`section: forschung` → `/#forschung`).
+  Files without `section` are added to the section above them.
+- `panel`: background of the section: `dark` (navy), `card` (white box), `yellow`, or none.
+- `type`: how the Markdown is laid out:
+  - `text` (default): headings, paragraphs and lists.
+  - `hero`: big intro with the dot picture and `buttons:`.
+  - `columns`: each bullet is a short point with a line on its left, three per row.
+  - `cards`: each bullet is a box starting with a **bold** title. `tone:` `blue`, `outline` or `cream`.
+    A `#### heading` at the start of a bullet becomes a big green number (e.g. `#### 51 Kinder`).
+  - `quotes`: each bullet is a quote; the `_italic_` part at the end is the source.
+  - `dots`: three columns with a coloured dot and a **bold** title.
+  - `team`: each bullet is `**Name**` and a role on the next line.
+  - `contact`: big heading; a `### heading` is shown as the large e-mail line.
+- `lead: true`: the first paragraph after a heading is shown larger.
+- `image`, `imageAlt`, `caption`: a picture shown after the text.
+- `buttons`: list of `label` and `href` (optional `variant: outline`). The first button is filled.
 
-To add a section, copy a file, give it a new name and `order`, and change the text.
+A quote (`> ...`) is shown as a small dashed note box. `<details><summary>Title</summary> … </details>`
+makes an expandable box (leave an empty line after `<summary>` and before `</details>`).
+
+To add a block, copy a file, give it a new name and `order`, and change the text.
 To remove one, delete the file.
 
 ### Where the code is
 
-`src/pages/`, `src/layouts/` and `src/lib/` hold the templates, and colours and fonts are
-at the top of `src/styles/global.css`. You only need to touch these to change the design.
+`src/pages/`, `src/components/`, `src/layouts/` and `src/lib/` hold the templates. Colours and
+fonts are at the top of `src/styles/global.css`. You only need to touch these to change the design.
