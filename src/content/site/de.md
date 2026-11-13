@@ -15,7 +15,6 @@ menu:
   - label: Kontakt
     href: /#kontakt
 notice: "Prototyp zur Diskussion im Team (Stand 11.11.2026). Gelb markierte Stellen fehlen noch."
-translationNotice: "English version in preparation. The team will translate once the German copy is final."
 ---
 
 - © 2026 Verein AttentionLab
